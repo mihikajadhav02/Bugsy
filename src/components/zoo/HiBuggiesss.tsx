@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion'
 import { Creature } from '../../types'
-import { useEffect, useState, useMemo, useRef } from 'react'
+import { useEffect, useState, useRef } from 'react'
 
 interface HiBuggiesssProps {
   activeBugs: Creature[]
