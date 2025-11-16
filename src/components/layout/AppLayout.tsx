@@ -9,6 +9,7 @@ interface SidebarProps {
   onToggleRunning: () => void
   onStep: () => void
   onReset: () => void
+  onShowEncyclopedia?: () => void
 }
 
 interface AppLayoutProps {

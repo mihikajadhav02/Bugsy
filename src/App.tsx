@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import AppLayout from './components/layout/AppLayout'
 import CodeInputPanel from './components/input/CodeInputPanel'
 import EcosystemSummary from './components/zoo/EcosystemSummary'
@@ -5,10 +6,13 @@ import HiBuggiesss from './components/zoo/HiBuggiesss'
 import CreatureGrid from './components/zoo/CreatureGrid'
 import EventLog from './components/events/EventLog'
 import NarratorBar from './components/events/NarratorBar'
+import BugEncyclopedia from './components/zoo/BugEncyclopedia'
 import { generateMockZooFromCode } from './utils/mockZoo'
 import { useZooSimulation } from './hooks/useZooSimulation'
 
 function App() {
+  const [showEncyclopedia, setShowEncyclopedia] = useState(false)
+  
   const {
     creatures,
     activeBugs,
@@ -33,16 +37,18 @@ function App() {
   }
 
   return (
-    <AppLayout
-      sidebarProps={{
-        isRunning,
-        chaosLevel,
-        tickCount,
-        onToggleRunning: toggleRunning,
-        onStep: stepOnce,
-        onReset: reset
-      }}
-    >
+    <>
+      <AppLayout
+        sidebarProps={{
+          isRunning,
+          chaosLevel,
+          tickCount,
+          onToggleRunning: toggleRunning,
+          onStep: stepOnce,
+          onReset: reset,
+          onShowEncyclopedia: () => setShowEncyclopedia(true)
+        }}
+      >
       <div className="flex flex-col gap-6 h-full">
         {/* Top Section: Code Input + Ecosystem Summary */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -75,6 +81,13 @@ function App() {
         </div>
       </div>
     </AppLayout>
+    
+    {/* Bug Encyclopedia - Rendered at App level to overlay entire page */}
+    <BugEncyclopedia 
+      isOpen={showEncyclopedia} 
+      onClose={() => setShowEncyclopedia(false)} 
+    />
+    </>
   )
 }
 

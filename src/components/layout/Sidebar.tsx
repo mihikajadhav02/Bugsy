@@ -7,6 +7,7 @@ interface SidebarProps {
   onToggleRunning?: () => void
   onStep?: () => void
   onReset?: () => void
+  onShowEncyclopedia?: () => void
 }
 
 export default function Sidebar({
@@ -15,7 +16,8 @@ export default function Sidebar({
   tickCount = 0,
   onToggleRunning,
   onStep,
-  onReset
+  onReset,
+  onShowEncyclopedia
 }: SidebarProps) {
   const getChaosLabel = (level: number): string => {
     if (level < 30) return 'Calm'
@@ -80,6 +82,22 @@ export default function Sidebar({
       >
         <span className="mr-2">↻</span>
         <span className="text-sm">Reset Zoo</span>
+      </motion.button>
+
+      {/* Get to Know the Bugs Button */}
+      <motion.button
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ delay: 0.6 }}
+        whileHover={{ scale: 1.05, x: 5 }}
+        whileTap={{ scale: 0.95 }}
+        onClick={onShowEncyclopedia}
+        className="w-full glass-panel border border-neon-fuchsia/50 p-3 rounded-lg text-left hover:border-neon-fuchsia transition-all"
+      >
+        <div className="flex items-center gap-2">
+          <span className="text-lg flex-shrink-0">📚</span>
+          <span className="text-xs text-neon-fuchsia font-medium leading-tight">Bug Encyclopedia</span>
+        </div>
       </motion.button>
 
       {/* Chaos Level Display */}

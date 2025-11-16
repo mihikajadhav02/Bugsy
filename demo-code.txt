@@ -1,0 +1,69 @@
+// HACKATHON DEMO CODE - Single code snippet that generates 6-7 bugs!
+// Copy and paste this entire block into the code input panel
+
+function processUserData(users) {
+    // Ring Cicada - Infinite Loop
+    let index = 0;
+    while (true) {
+        if (index >= users.length) break;
+        console.log("Processing user:", users[index]);
+        // Missing increment - infinite loop!
+    }
+    
+    // Offset Ant - Off-by-one Error
+    const results = [];
+    for (let i = 0; i <= users.length; i++) {
+        results.push(users[i].name);
+    }
+    
+    // Glow Moth - Memory Leak (missing resource cleanup)
+    const file = fs.open('output.txt', 'w');
+    const connection = db.connect('localhost');
+    const data = file.readAll();
+    // Missing: file.close() and connection.close()
+    
+    // Flash Mantis - Race Condition (shared mutation)
+    let counter = 0;
+    users.forEach(() => {
+        counter++;
+        counter--;
+        counter++;
+    });
+    
+    // Tangled Worm - Deep Nesting (Spaghetti Code)
+    if (users) {
+        if (users.length > 0) {
+            for (let i = 0; i < users.length; i++) {
+                if (users[i]) {
+                    if (users[i].profile) {
+                        if (users[i].profile.settings) {
+                            if (users[i].profile.settings.active) {
+                                console.log("Active user found");
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    // Blink Firefly - Log Spam
+    console.log("Starting process");
+    console.log("Step 1 complete");
+    console.log("Step 2 complete");
+    console.log("Step 3 complete");
+    console.log("Step 4 complete");
+    console.log("Step 5 complete");
+    console.log("Step 6 complete");
+    console.log("Process finished");
+    
+    // Void Beetle - Generic Catch
+    try {
+        const user = getUserById(null);
+        const name = user.name.toUpperCase();
+    } catch (e) {
+        // Generic catch - no error handling!
+    }
+    
+    return results;
+}
