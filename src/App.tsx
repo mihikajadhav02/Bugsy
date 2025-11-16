@@ -1,6 +1,7 @@
 import AppLayout from './components/layout/AppLayout'
 import CodeInputPanel from './components/input/CodeInputPanel'
 import EcosystemSummary from './components/zoo/EcosystemSummary'
+import HiBuggiesss from './components/zoo/HiBuggiesss'
 import CreatureGrid from './components/zoo/CreatureGrid'
 import EventLog from './components/events/EventLog'
 import NarratorBar from './components/events/NarratorBar'
@@ -10,6 +11,7 @@ import { useZooSimulation } from './hooks/useZooSimulation'
 function App() {
   const {
     creatures,
+    activeBugs,
     events,
     narration,
     isRunning,
@@ -52,8 +54,13 @@ function App() {
           </div>
         </div>
 
+        {/* Hi Buggiesss Section */}
+        <div className="flex-shrink-0">
+          <HiBuggiesss activeBugs={activeBugs} />
+        </div>
+
         {/* Middle Section: Creature Grid */}
-        <div className="flex-1 min-h-0">
+        <div className="flex-1 min-h-0 flex flex-col">
           <CreatureGrid creatures={creatures} />
         </div>
 

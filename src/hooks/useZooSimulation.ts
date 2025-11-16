@@ -142,8 +142,13 @@ export function useZooSimulation() {
     setIsRunning(false)
   }, [])
 
+  // Get active bugs - show ALL bugs in Hi buggiesss box
+  // They appear as soon as they're detected in the Digital Terrarium
+  const activeBugs = creatures
+
   return {
     creatures,
+    activeBugs,
     events,
     narration,
     isRunning,

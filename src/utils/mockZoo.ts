@@ -9,6 +9,8 @@ export interface MockZooResult {
 
 interface BugArchetype {
   name: string
+  bugLabel: string
+  bugCategory: string
   description: string
   severity: Severity
   breedType: BreedType
@@ -16,56 +18,185 @@ interface BugArchetype {
 
 const bugArchetypes: BugArchetype[] = [
   {
-    name: "NullPointer Sloth",
-    description: "Born from dereferencing undefined values. Moves slowly but causes crashes.",
+    name: "Glow Moth",
+    bugLabel: "💧 Memory Leak",
+    bugCategory: "memory_leak",
+    description: "A luminous moth that drips stored data wherever it goes, slowly flooding the heap with glowing residue.",
     severity: "high",
     breedType: "memory"
   },
   {
-    name: "RaceCondition Raptor",
-    description: "Fast, unpredictable, and dangerous. Thrives in concurrent chaos.",
+    name: "Tangled Worm",
+    bugLabel: "🍝 Spaghetti Code",
+    bugCategory: "spaghetti_code",
+    description: "A rainbow worm made of twisted logic strands, impossible to straighten without breaking something else.",
+    severity: "medium",
+    breedType: "architecture"
+  },
+  {
+    name: "Void Beetle",
+    bugLabel: "⛔ Null Pointer",
+    bugCategory: "null_pointer",
+    description: "A hollow-shelled beetle that represents missing values and unchecked assumptions, crashing anything that touches its void.",
+    severity: "high",
+    breedType: "safety"
+  },
+  {
+    name: "Offset Ant",
+    bugLabel: "➕1 Off-by-one",
+    bugCategory: "off_by_one",
+    description: "An over-eager ant that always overshoots or undershoots the target slot by one tiny step.",
+    severity: "medium",
+    breedType: "indexing"
+  },
+  {
+    name: "Flash Mantis",
+    bugLabel: "⚡ Race Condition",
+    bugCategory: "race_condition",
+    description: "A hyper-fast mantis that acts before the rest of the system is ready, causing unpredictable outcomes.",
     severity: "critical",
     breedType: "concurrency"
   },
   {
-    name: "OffByOne Ape",
-    description: "Mischievous indexer that always misses by one. Loves array boundaries.",
-    severity: "medium",
-    breedType: "logic"
+    name: "Ring Cicada",
+    bugLabel: "∞ Infinite Loop",
+    bugCategory: "infinite_loop",
+    description: "A cicada that sings the same cycle forever, looping in a glowing ring without ever reaching a return.",
+    severity: "critical",
+    breedType: "control_flow"
   },
   {
-    name: "Leaky Kraken",
-    description: "Tentacles of memory leaks spreading through the codebase.",
-    severity: "high",
-    breedType: "memory"
-  },
-  {
-    name: "Spaghetti Hydra",
-    description: "Multi-headed monster of tangled code. Cuts one head, two grow back.",
-    severity: "medium",
-    breedType: "logic"
-  },
-  {
-    name: "Syntax Serpent",
-    description: "Slithers through code leaving parsing errors in its wake.",
+    name: "Rune Spider",
+    bugLabel: "{} Syntax Error",
+    bugCategory: "syntax_error",
+    description: "A spider that spins webs of broken symbols; one wrong rune and the whole structure collapses.",
     severity: "low",
     breedType: "syntax"
   },
   {
-    name: "Performance Snail",
-    description: "Slow and methodical, leaving O(n²) trails everywhere.",
-    severity: "medium",
-    breedType: "performance"
-  },
-  {
-    name: "Infinite Loop Leviathan",
-    description: "Massive creature that never stops. Consumes all CPU cycles.",
-    severity: "critical",
-    breedType: "performance"
+    name: "Blink Firefly",
+    bugLabel: "📣 Log Spam",
+    bugCategory: "log_spam",
+    description: "An overexcited firefly that won't stop blinking, drowning the night (and your console) in noise.",
+    severity: "low",
+    breedType: "logging"
   }
 ]
 
 const statuses: Status[] = ["Roaming", "Hunting", "Sleeping", "Reproducing", "Evolving"]
+
+// Helper function to generate image URL from creature name
+function getImageUrl(creatureName: string): string {
+  // Check if it's a hybrid (contains "×")
+  if (creatureName.includes('×')) {
+    // Parse hybrid name: "Glow Moth × Flash Mantis" -> "glow-moth-flash-mantis"
+    const parts = creatureName.split('×').map(part => 
+      part.trim().toLowerCase().replace(/\s+/g, '-')
+    )
+    const hybridPath = parts.join('-')
+    return `/hybrid/${hybridPath}.png`
+  }
+  
+  // Regular bug: "Glow Moth" -> "glow-moth"
+  const bugPath = creatureName.toLowerCase().replace(/\s+/g, '-')
+  return `/bugs/${bugPath}.png`
+}
+
+// Pattern detection and mapping to bug categories
+type CodePattern = 
+  | 'potential_infinite_loop'
+  | 'off_by_one_loop'
+  | 'missing_resource_cleanup'
+  | 'shared_mutation_no_lock'
+  | 'generic_catch'
+  | 'deep_nesting'
+  | 'log_spam'
+  | 'syntax_error'
+
+function analyzeCodePatterns(code: string): CodePattern[] {
+  const patterns: CodePattern[] = []
+
+  // Check for infinite loops
+  if (/(while\s*\([^)]*true[^)]*\)|for\s*\([^)]*;;[^)]*\))/i.test(code)) {
+    patterns.push('potential_infinite_loop')
+  }
+
+  // Check for off-by-one patterns (loops with <= length or < length-1)
+  if (/(for\s*\([^)]*<=\s*\w+\.length|for\s*\([^)]*<\s*\w+\.length\s*-\s*1)/i.test(code)) {
+    patterns.push('off_by_one_loop')
+  }
+
+  // Check for missing resource cleanup (open files, connections without close)
+  if (/(\.open\(|\.connect\(|new\s+\w+Stream\()/i.test(code) && !/(\.close\(|\.disconnect\(|finally)/i.test(code)) {
+    patterns.push('missing_resource_cleanup')
+  }
+
+  // Check for shared mutation without locks (concurrent access patterns)
+  if (/(\.push\(|\.pop\(|\.shift\(|\.unshift\(|\+\+|--)/i.test(code) && 
+      !/(lock|mutex|synchronized|await|async)/i.test(code)) {
+    patterns.push('shared_mutation_no_lock')
+  }
+
+  // Check for generic catch blocks
+  if (/(catch\s*\([^)]*\)\s*\{[^}]*\}|catch\s*\{)/i.test(code) && 
+      !/(catch\s*\([^)]*Error[^)]*\)|catch\s*\([^)]*Exception[^)]*\))/i.test(code)) {
+    patterns.push('generic_catch')
+  }
+
+  // Check for deep nesting (multiple levels of braces)
+  let maxDepth = 0
+  let currentDepth = 0
+  for (const char of code) {
+    if (char === '{') {
+      currentDepth++
+      maxDepth = Math.max(maxDepth, currentDepth)
+    } else if (char === '}') {
+      currentDepth--
+    }
+  }
+  if (maxDepth > 4) {
+    patterns.push('deep_nesting')
+  }
+
+  // Check for log spam (multiple console.log/print statements)
+  const logMatches = code.match(/(console\.(log|error|warn|info)|print\()/gi)
+  if (logMatches && logMatches.length > 5) {
+    patterns.push('log_spam')
+  }
+
+  // Check for syntax errors (unclosed brackets, quotes, etc.)
+  const openBraces = (code.match(/\{/g) || []).length
+  const closeBraces = (code.match(/\}/g) || []).length
+  const openParens = (code.match(/\(/g) || []).length
+  const closeParens = (code.match(/\)/g) || []).length
+  const openBrackets = (code.match(/\[/g) || []).length
+  const closeBrackets = (code.match(/\]/g) || []).length
+  if (openBraces !== closeBraces || openParens !== closeParens || openBrackets !== closeBrackets) {
+    patterns.push('syntax_error')
+  }
+
+  return patterns
+}
+
+// Map detected patterns to bug categories
+function patternToBugCategory(pattern: CodePattern): string {
+  const mapping: Record<CodePattern, string> = {
+    'potential_infinite_loop': 'infinite_loop',
+    'off_by_one_loop': 'off_by_one',
+    'missing_resource_cleanup': 'memory_leak',
+    'shared_mutation_no_lock': 'race_condition',
+    'generic_catch': 'null_pointer',
+    'deep_nesting': 'spaghetti_code',
+    'log_spam': 'log_spam',
+    'syntax_error': 'syntax_error'
+  }
+  return mapping[pattern]
+}
+
+// Find archetype by bug category
+function findArchetypeByCategory(category: string): BugArchetype | null {
+  return bugArchetypes.find(arch => arch.bugCategory === category) || null
+}
 
 function generateCreature(archetype: BugArchetype, index: number, seed: number, rng: SeededRng): Creature {
   // Use seed + index to create unique deterministic IDs
@@ -76,9 +207,12 @@ function generateCreature(archetype: BugArchetype, index: number, seed: number, 
   return {
     id: `creature-${idNumber}-${index}`,
     name: archetype.name,
+    bugLabel: archetype.bugLabel,
+    bugCategory: archetype.bugCategory,
     description: archetype.description,
     severity: archetype.severity,
     breedType: archetype.breedType,
+    imageUrl: getImageUrl(archetype.name),
     hp: Math.floor(rng.rand(40, 121)), // [40, 120] inclusive
     aggression: Math.floor(rng.rand(10, 96)), // [10, 95] inclusive
     speed: Math.floor(rng.rand(5, 91)), // [5, 90] inclusive
@@ -158,6 +292,23 @@ export function generateMockZooFromCode(code: string): MockZooResult {
   const seed = hashStringToSeed(code.trim())
   const rng = createSeededRng(seed)
 
+  // Analyze code patterns
+  const detectedPatterns = analyzeCodePatterns(code)
+  const selectedArchetypes: BugArchetype[] = []
+  const usedCategories = new Set<string>()
+
+  // Map detected patterns to archetypes
+  for (const pattern of detectedPatterns) {
+    const category = patternToBugCategory(pattern)
+    if (!usedCategories.has(category)) {
+      const archetype = findArchetypeByCategory(category)
+      if (archetype) {
+        selectedArchetypes.push(archetype)
+        usedCategories.add(category)
+      }
+    }
+  }
+
   // Determine number of creatures based on code length
   const codeLength = code.length
   let numCreatures: number
@@ -172,13 +323,14 @@ export function generateMockZooFromCode(code: string): MockZooResult {
     numCreatures = Math.floor(rng.rand(4, 6)) // 4 or 5
   }
 
-  // Select random archetypes deterministically
-  const selectedArchetypes: BugArchetype[] = []
-  const availableArchetypes = [...bugArchetypes]
+  // Fill remaining slots with random archetypes if needed
+  const availableArchetypes = bugArchetypes.filter(arch => !usedCategories.has(arch.bugCategory))
   
-  for (let i = 0; i < numCreatures && availableArchetypes.length > 0; i++) {
+  while (selectedArchetypes.length < numCreatures && availableArchetypes.length > 0) {
     const randomIndex = Math.floor(rng.rand(0, availableArchetypes.length))
-    selectedArchetypes.push(availableArchetypes.splice(randomIndex, 1)[0])
+    const selected = availableArchetypes.splice(randomIndex, 1)[0]
+    selectedArchetypes.push(selected)
+    usedCategories.add(selected.bugCategory)
   }
 
   // Generate creatures

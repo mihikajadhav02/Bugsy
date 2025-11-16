@@ -77,9 +77,12 @@ export function runSimulationTick(creatures: Creature[]): {
         const offspring: Creature = {
           id: `creature-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
           name: updatedCreature.name,
+          bugLabel: updatedCreature.bugLabel,
+          bugCategory: updatedCreature.bugCategory,
           description: updatedCreature.description,
           severity: updatedCreature.severity,
           breedType: updatedCreature.breedType,
+          imageUrl: updatedCreature.imageUrl,
           hp: Math.max(0, Math.min(100, updatedCreature.hp + (hpMutation * hpSign))),
           aggression: Math.max(0, Math.min(100, updatedCreature.aggression + (aggressionMutation * aggressionSign))),
           speed: Math.max(0, Math.min(100, updatedCreature.speed + (speedMutation * speedSign))),
@@ -134,10 +137,8 @@ export function runSimulationTick(creatures: Creature[]): {
       const pairIndex = Math.floor(Math.random() * validPairs.length)
       const [parentA, parentB] = validPairs[pairIndex]
 
-      // Create hybrid name: first word of parent A + first word of parent B + "(Hybrid)"
-      const nameAWords = parentA.name.split(' ')
-      const nameBWords = parentB.name.split(' ')
-      const hybridName = `${nameAWords[0]} ${nameBWords[0]} (Hybrid)`
+      // Create hybrid name: use both full parent names
+      const hybridName = `${parentA.name} × ${parentB.name}`
 
       // Combine breedType: "typeA + typeB"
       const hybridBreedType = `${parentA.breedType} + ${parentB.breedType}` as any
@@ -166,12 +167,27 @@ export function runSimulationTick(creatures: Creature[]): {
       // Create hybrid description
       const hybridDescription = `Hybrid of ${parentA.name} and ${parentB.name}. A unique fusion combining ${parentA.breedType} and ${parentB.breedType} traits.`
 
+      // Combine bug labels: use parentA's label with a hybrid indicator
+      const hybridBugLabel = `${parentA.bugLabel} × ${parentB.bugLabel}`
+      // Use parentA's category (or could combine, but keeping it simple)
+      const hybridBugCategory = `${parentA.bugCategory}_${parentB.bugCategory}`
+
+      // Generate hybrid image URL: "Glow Moth × Flash Mantis" -> "glow-moth-flash-mantis.png"
+      const hybridImagePath = hybridName
+        .split('×')
+        .map(part => part.trim().toLowerCase().replace(/\s+/g, '-'))
+        .join('-')
+      const hybridImageUrl = `/hybrid/${hybridImagePath}.png`
+
       const hybrid: Creature = {
         id: `creature-hybrid-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
         name: hybridName,
+        bugLabel: hybridBugLabel,
+        bugCategory: hybridBugCategory,
         description: hybridDescription,
         severity: hybridSeverity,
         breedType: hybridBreedType,
+        imageUrl: hybridImageUrl,
         hp: Math.max(0, Math.min(100, Math.round(avgHP + (hpMutation * hpSign)))),
         aggression: Math.max(0, Math.min(100, Math.round(avgAggression + (aggressionMutation * aggressionSign)))),
         speed: Math.max(0, Math.min(100, Math.round(avgSpeed + (speedMutation * speedSign)))),
